@@ -190,6 +190,7 @@ MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *e
                 {
                     // we need a global playerBlockedCounter variable to see how many times the player has not moved/blocked and move the enemy using the botDirCache
                         // at the index of how many times the player has not moved.
+                    printf("\nBLOCKED");
                     playerBlockedCounter += 1;
 
                     if (botDirCache[playerBlockedCounter] == UP) 

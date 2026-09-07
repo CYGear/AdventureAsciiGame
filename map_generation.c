@@ -95,51 +95,51 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
 
     do
     {
-        tempX = rand() % map_size->x;
-        tempY = rand() % map_size->y;
-
-        isPlayerPos = (tempX == player->position[0] && tempY == player->position[1]);
-        isEnemyPos = (tempX == enemy->position[0] && tempY == enemy->position[1]);
-        isExitPos = (tempX == exit_x && tempY == exit_y);
-
-        conditionVert1 = (map[((tempY * map_size->x) + tempX)] == ' ');
-        conditionVert2 = (map[(((tempY + 1) * map_size->x) + tempX)] == ' ');
-        conditionVert3 = (map[(((tempY + 2) * map_size->x) + tempX)] == ' ');
-
-        conditionHori1 = (map[((tempY * map_size->x) + tempX)] == ' ');
-        conditionHori2 = (map[((tempY * map_size->x) + (tempX + 1))] == ' ');
-        conditionHori3 = (map[((tempY * map_size->x) + (tempX + 2))] == ' ');
-
-        if (wall_list[wallsGenerated].wallDir == VERTICAL)
+        do
         {
-            if ((conditionVert1 && conditionVert2 && conditionVert3) && !(isPlayerPos && isEnemyPos && isExitPos))
-            {
-                map[((tempY * map_size->x) + tempX)] = '#';
-                map[(((tempY + 1) * map_size->x) + tempX)] = '#';
-                map[(((tempY + 2) * map_size->x) + tempX)] = '#';
-                wallsGenerated += 1;
-            }
-        }
-        else 
-        {
-            if ((conditionHori1 && conditionHori2 && conditionHori3) && !(isPlayerPos && isEnemyPos && isExitPos))
-            {
-                map[((tempY * map_size->x) + tempX)] = '#';
-                map[((tempY * map_size->x) + (tempX + 1))] = '#';
-                map[((tempY * map_size->x) + (tempX + 2))] = '#';
-                wallsGenerated += 1;
-            }
-        }
-    } while (wallsGenerated != wallsToGenerate);
+            tempX = rand() % map_size->x;
+            tempY = rand() % map_size->y;
 
+            isPlayerPos = (tempX == player->position[0] && tempY == player->position[1]);
+            isEnemyPos = (tempX == enemy->position[0] && tempY == enemy->position[1]);
+            isExitPos = (tempX == exit_x && tempY == exit_y);
+
+            conditionVert1 = (map[((tempY * map_size->x) + tempX)] == ' ');
+            conditionVert2 = (map[(((tempY + 1) * map_size->x) + tempX)] == ' ');
+            conditionVert3 = (map[(((tempY + 2) * map_size->x) + tempX)] == ' ');
+
+            conditionHori1 = (map[((tempY * map_size->x) + tempX)] == ' ');
+            conditionHori2 = (map[((tempY * map_size->x) + (tempX + 1))] == ' ');
+            conditionHori3 = (map[((tempY * map_size->x) + (tempX + 2))] == ' ');
+
+            if (wall_list[wallsGenerated].wallDir == VERTICAL)
+            {
+                if ((conditionVert1 && conditionVert2 && conditionVert3) && !(isPlayerPos && isEnemyPos && isExitPos))
+                {
+                    map[((tempY * map_size->x) + tempX)] = '#';
+                    map[(((tempY + 1) * map_size->x) + tempX)] = '#';
+                    map[(((tempY + 2) * map_size->x) + tempX)] = '#';
+                    wallsGenerated += 1;
+                }
+            }
+            else 
+            {
+                if ((conditionHori1 && conditionHori2 && conditionHori3) && !(isPlayerPos && isEnemyPos && isExitPos))
+                {
+                    map[((tempY * map_size->x) + tempX)] = '#';
+                    map[((tempY * map_size->x) + (tempX + 1))] = '#';
+                    map[((tempY * map_size->x) + (tempX + 2))] = '#';
+                    wallsGenerated += 1;
+                }
+            }
+        } while (wallsGenerated != wallsToGenerate);
+    } while(!isPlayerReachable(map, map_size, player, enemy) && !isExitReachable(map, map_size, player, enemy));
     /*do 
     {
         
     } while (!isPlayerReachable(map, map_size, player, enemy) &&!isExitReachable(map, map_size, player, enemy);*/ // keep running untill both are reachable
         
     // keep generating untill both paths exist
-
-    //!isPlayerReachable(map, map_size, player, enemy, botDirCache, botCacheSize) && !isExitReachable(map, map_size, player, enemy)
 
     // END OF WALLS
 
