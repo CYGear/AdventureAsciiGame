@@ -95,12 +95,11 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
 
     do 
     {
+        wallsGenerated = 0; // If failed then reset
+        printf("\nFailed!");
+
         do // map[((y * map_size->x) + x)]
         {
-            if (wallsGenerated == wallsToGenerate)
-            {
-                wallsGenerated = 0;
-            }
 
             tempX = rand() % map_size->x;
             tempY = rand() % map_size->y;
