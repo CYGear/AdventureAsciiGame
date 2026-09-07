@@ -49,6 +49,7 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
     bool isEnemyPos = false;
     bool isExitPos = false;
 
+    printf("\nSTARTED  PLACING ENEMY, PLAYER, AND EXIT!");
     for (int y = 0; y < map_size->y; y++) // y
     {
         for (int x = 0; x < map_size->x; x++) // x
@@ -67,20 +68,23 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
             }
         }
     }
+    printf("\nFINNISHED PLACING ENEMY, PLAYER, AND EXIT!");
 
     // WALLS:
     
-    int wallsToGenerate = (map_size->x + 5); // is 10 * 10 then generate 15 wall coords in entire array
+    int wallsToGenerate = (int)(map_size->x); // is 10 * 10 then generate 10 wall coords in entire array
     int wallsGenerated = 0;
 
     Wall wall_list[wallsToGenerate];
 
+    printf("\nSTARTED GENERATING WALL DIRECTIONS");
     for (int i = 0; i < wallsToGenerate; i++)
     {
         WallDirection tempDirection = rand() % 2; // either VERTICAL or HORIZONTAL
 
         wall_list[i].wallDir = tempDirection;
     }
+    printf("\nFINNISHED GENERATING WALL DIRECTIONS");
 
     int tempX = 0;
     int tempY = 0;
@@ -93,10 +97,13 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
     bool conditionHori2 = false;
     bool conditionHori3 = false;
 
+    printf("\nSTARTED WALL GENERATION!");
     do
     {
         do
         {
+            printf("\n%d", wallsGenerated);
+
             tempX = rand() % map_size->x;
             tempY = rand() % map_size->y;
 
@@ -134,6 +141,7 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
             }
         } while (wallsGenerated != wallsToGenerate);
     } while(!isPlayerReachable(map, map_size, player, enemy) && !isExitReachable(map, map_size, player, enemy));
+    printf("\nCOMPLETED WALL GENERATION!");
     /*do 
     {
         

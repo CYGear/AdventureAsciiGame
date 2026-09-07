@@ -11,6 +11,8 @@ typedef struct
     int parentX; // X coordinate of the tile we stepped here from
     int parentY; // Y coordinate of the tile we stepped here from
 
+    bool visited; // Check if node has been visited. if true then do not modify parentX or parentY
+
 } PathNode;
 
 // Worker functions
@@ -85,9 +87,14 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
 
         // CHECK UP
         if (map[((currentY - 1) * map_size->x) + currentX] == ' ')
-        {                                                                          //int goalX, int currentX, int goalY, int currentY
-            pathGrid[((currentY - 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY - 1);
-                                                                                               //int currentX, int currentY - 1, int startX, int startY
+        {
+            if (!pathGrid[((currentY - 1) * map_size->x) + currentX].visited)
+            {
+                pathGrid[((currentY - 1) * map_size->x) + currentX].parentX = currentX;
+                pathGrid[((currentY - 1) * map_size->x) + currentX].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[((currentY - 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY - 1);
+            }    
+                                                                                            //int currentX, int currentY - 1, int startX, int startY
             pathGrid[((currentY - 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY - 1, player->position[0], player->position[1]);
 
             pathGrid[((currentY - 1) * map_size->x) + currentX].f = (pathGrid[((currentY - 1) * map_size->x) + currentX].g) + (pathGrid[((currentY - 1) * map_size->x) + currentX].h);
@@ -95,6 +102,9 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK DOWN
         if (map[((currentY + 1) * map_size->x) + currentX] == ' ')
         {
+            pathGrid[((currentY + 1) * map_size->x) + currentX].parentX = currentX;
+            pathGrid[((currentY + 1) * map_size->x) + currentX].parentY = currentY;
+
             pathGrid[((currentY + 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY + 1);
             pathGrid[((currentY + 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY + 1, player->position[0], player->position[1]);
             pathGrid[((currentY + 1) * map_size->x) + currentX].f = (pathGrid[((currentY + 1) * map_size->x) + currentX].g) + (pathGrid[((currentY + 1) * map_size->x) + currentX].h);
@@ -102,6 +112,9 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK LEFT
         if (map[(currentY * map_size->x) + (currentX - 1)] == ' ')
         {
+            pathGrid[(currentY * map_size->x) + (currentX - 1)].parentX = currentX;
+            pathGrid[(currentY * map_size->x) + (currentX - 1)].parentY = currentY;
+
             pathGrid[(currentY * map_size->x) + (currentX - 1)].h = manhattanDistance(exit_x, currentX - 1, exit_y, currentY);
             pathGrid[(currentY * map_size->x) + (currentX - 1)].g = backTrack(pathGrid, map_size, currentX - 1, currentY, player->position[0], player->position[1]);
             pathGrid[(currentY * map_size->x) + (currentX - 1)].f = (pathGrid[(currentY * map_size->x) + (currentX - 1)].g) + (pathGrid[(currentY * map_size->x) + (currentX - 1)].h);
@@ -109,6 +122,9 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK RIGHT
         if (map[(currentY * map_size->x) + (currentX + 1)] == ' ')
         {
+            pathGrid[(currentY * map_size->x) + (currentX + 1)].parentX = currentX;
+            pathGrid[(currentY * map_size->x) + (currentX + 1)].parentY = currentY;
+
             pathGrid[(currentY * map_size->x) + (currentX + 1)].h = manhattanDistance(exit_x, currentX + 1, exit_y, currentY);
             pathGrid[(currentY * map_size->x) + (currentX + 1)].g = backTrack(pathGrid, map_size, currentX + 1, currentY, player->position[0], player->position[1]);
             pathGrid[(currentY * map_size->x) + (currentX + 1)].f = (pathGrid[(currentY * map_size->x) + (currentX + 1)].g) + (pathGrid[(currentY * map_size->x) + (currentX + 1)].h);
