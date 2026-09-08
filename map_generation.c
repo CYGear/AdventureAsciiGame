@@ -139,8 +139,8 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
                     wallsGenerated += 1;
                 }
             }
-        } while (wallsGenerated != wallsToGenerate);
-    } while(!isPlayerReachable(map, map_size, player, enemy) && !isExitReachable(map, map_size, player, enemy));
+        } while (wallsGenerated < wallsToGenerate);
+    } while(!isPlayerReachable(map, map_size, player, enemy) || !isExitReachable(map, map_size, player, enemy));
     printf("\nCOMPLETED WALL GENERATION!");
     /*do 
     {

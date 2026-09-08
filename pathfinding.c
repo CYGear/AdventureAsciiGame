@@ -24,14 +24,12 @@ int manhattanDistance(int playerX, int enemyX, int playerY, int enemyY)
 
 int backTrack(PathNode *pathGrid, Map *map_size, int currentX, int currentY, int startX, int startY)
 {
-    // Keep going back in nodes untill manhattan distance is equal to 1, and then we will just add 1 to the final counter
     int counter = 0;
 
     bool completed = false;
 
     int tempX = currentX; // start from current node
     int tempY = currentY;
-    PathNode tempNode;
 
     int tempData = 0; // hold data
 
@@ -42,16 +40,14 @@ int backTrack(PathNode *pathGrid, Map *map_size, int currentX, int currentY, int
         tempX = pathGrid[(tempY * map_size->x) + tempX].parentX;
         tempY = pathGrid[(tempY * map_size->x) + tempData].parentY;
 
-        tempNode = pathGrid[(tempY * map_size->x) + tempX];
-
-        if ((tempNode.parentX != startX) && (tempNode.parentY != startY))
+        if (tempX == startX && tempY == startY)
         {
             counter += 1;
-        }
-        else
-        {
-            counter += 2; // add one for the node and then add another for the original position
             completed = true;
+        }
+        else 
+        {
+            counter += 1;
         }
     }while(!completed);
     
@@ -67,12 +63,15 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
     PathNode *pathGrid = malloc((map_size->x * map_size->y) * sizeof(PathNode));
     // pathGrid is where algorithm will be testing paths
 
+    for (int i = 0; i < (map_size->x * map_size->y); i++) // set all nodes to unvisited
+    {
+        pathGrid[i].visited = false;
+    }
+
     int currentX = player->position[0];
     int currentY = player->position[1];
 
-    PathNode *tempLowestFVal1;
-    PathNode *tempLowestFVal2;
-    PathNode *lowestFVal;
+    PathNode *lowestFVal = NULL;
 
     PathNode *up;
     PathNode *down;
@@ -80,6 +79,8 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
     PathNode *right;
 
     BotDirection tempDir;
+
+    PathNode *tempDirCompetetors[4]; // CHOOSES DIRECTIONS THAT ARE VISITED
 
     do
     {
@@ -92,8 +93,9 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
             {
                 pathGrid[((currentY - 1) * map_size->x) + currentX].parentX = currentX;
                 pathGrid[((currentY - 1) * map_size->x) + currentX].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
-                pathGrid[((currentY - 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY - 1);
+                pathGrid[((currentY - 1) * map_size->x) + currentX].visited = true;
             }    
+            pathGrid[((currentY - 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY - 1);
                                                                                             //int currentX, int currentY - 1, int startX, int startY
             pathGrid[((currentY - 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY - 1, player->position[0], player->position[1]);
 
@@ -102,8 +104,12 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK DOWN
         if (map[((currentY + 1) * map_size->x) + currentX] == ' ')
         {
-            pathGrid[((currentY + 1) * map_size->x) + currentX].parentX = currentX;
-            pathGrid[((currentY + 1) * map_size->x) + currentX].parentY = currentY;
+            if (!pathGrid[((currentY + 1) * map_size->x) + currentX].visited)
+            {
+                pathGrid[((currentY + 1) * map_size->x) + currentX].parentX = currentX;
+                pathGrid[((currentY + 1) * map_size->x) + currentX].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[((currentY + 1) * map_size->x) + currentX].visited = true;
+            } 
 
             pathGrid[((currentY + 1) * map_size->x) + currentX].h = manhattanDistance(exit_x, currentX, exit_y, currentY + 1);
             pathGrid[((currentY + 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY + 1, player->position[0], player->position[1]);
@@ -112,8 +118,12 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK LEFT
         if (map[(currentY * map_size->x) + (currentX - 1)] == ' ')
         {
-            pathGrid[(currentY * map_size->x) + (currentX - 1)].parentX = currentX;
-            pathGrid[(currentY * map_size->x) + (currentX - 1)].parentY = currentY;
+            if (!pathGrid[(currentY * map_size->x) + (currentX - 1)].visited)
+            {
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].parentX = currentX;
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].visited = true;
+            } 
 
             pathGrid[(currentY * map_size->x) + (currentX - 1)].h = manhattanDistance(exit_x, currentX - 1, exit_y, currentY);
             pathGrid[(currentY * map_size->x) + (currentX - 1)].g = backTrack(pathGrid, map_size, currentX - 1, currentY, player->position[0], player->position[1]);
@@ -122,8 +132,12 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         // CHECK RIGHT
         if (map[(currentY * map_size->x) + (currentX + 1)] == ' ')
         {
-            pathGrid[(currentY * map_size->x) + (currentX + 1)].parentX = currentX;
-            pathGrid[(currentY * map_size->x) + (currentX + 1)].parentY = currentY;
+            if (!pathGrid[(currentY * map_size->x) + (currentX + 1)].visited)
+            {
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].parentX = currentX;
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].visited = true;
+            } 
 
             pathGrid[(currentY * map_size->x) + (currentX + 1)].h = manhattanDistance(exit_x, currentX + 1, exit_y, currentY);
             pathGrid[(currentY * map_size->x) + (currentX + 1)].g = backTrack(pathGrid, map_size, currentX + 1, currentY, player->position[0], player->position[1]);
@@ -132,14 +146,58 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         
         // WE CHECK ALL SURROUNDING NODES F AND CHOOSE LOWEST AND THEN CHOOSE UP, DOWN, RIGHT, LEFT
 
-        up = &pathGrid[((currentY - 1) * map_size->x) + currentX];
-        down = &pathGrid[((currentY + 1) * map_size->x) + currentX];
-        left = &pathGrid[(currentY * map_size->x) + (currentX - 1)];
-        right = &pathGrid[(currentY * map_size->x) + (currentX + 1)];
+        up = (pathGrid[((currentY - 1) * map_size->x) + currentX].visited) ? &pathGrid[((currentY - 1) * map_size->x) + currentX] : NULL;
+        down = (pathGrid[((currentY + 1) * map_size->x) + currentX].visited) ? &pathGrid[((currentY + 1) * map_size->x) + currentX] : NULL;
+        left = (pathGrid[(currentY * map_size->x) + (currentX - 1)].visited) ? &pathGrid[(currentY * map_size->x) + (currentX - 1)] : NULL;
+        right = (pathGrid[(currentY * map_size->x) + (currentX + 1)].visited) ? &pathGrid[(currentY * map_size->x) + (currentX + 1)] : NULL;
 
-        tempLowestFVal1 = (up->f < down->f) ? up : down;
-        tempLowestFVal2 = (left->f < right->f) ? left : right;
-        lowestFVal = (tempLowestFVal1->f < tempLowestFVal2->f) ? tempLowestFVal1 : tempLowestFVal2;
+        tempDirCompetetors[0] = NULL;
+        tempDirCompetetors[1] = NULL;
+        tempDirCompetetors[2] = NULL;
+        tempDirCompetetors[3] = NULL;
+
+        lowestFVal = NULL;
+
+        if (up != NULL)
+        {
+            tempDirCompetetors[0] = up;
+            lowestFVal = tempDirCompetetors[0];
+        }
+        if (down != NULL)
+        {
+            tempDirCompetetors[1] = down;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[1];
+            }
+        }
+        if (left != NULL)
+        {
+            tempDirCompetetors[2] = left;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[2];
+            }
+        }
+        if (right != NULL)
+        {
+            tempDirCompetetors[3] = right;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[3];
+            }
+        }
+        
+        for (int i = 0; i < 4; i++)
+        {
+            if (tempDirCompetetors[i] != NULL)
+            {
+                if (tempDirCompetetors[i]->f < lowestFVal->f)
+                {
+                    lowestFVal = tempDirCompetetors[i];
+                }
+            }
+        }
 
         if (lowestFVal == up)
         {
@@ -180,11 +238,15 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         {
             if (currentX == exit_x && currentY == exit_y)
             {
+                free(pathGrid);
+                pathGrid = NULL;
                 return true; // path found
             }
         }
         else
         {
+            free(pathGrid);
+            pathGrid = NULL;
             return false; // Checked everywhere possible and could not find a path
         }
 
@@ -199,12 +261,15 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
     PathNode *pathGrid = malloc((map_size->x * map_size->y) * sizeof(PathNode));
     // pathGrid is where algorithm will be testing paths
 
+    for (int i = 0; i < (map_size->x * map_size->y); i++) // set all nodes to unvisited
+    {
+        pathGrid[i].visited = false;
+    }
+
     int currentX = enemy->position[0];
     int currentY = enemy->position[1];
 
-    PathNode *tempLowestFVal1;
-    PathNode *tempLowestFVal2;
-    PathNode *lowestFVal;
+    PathNode *lowestFVal = NULL;
 
     PathNode *up;
     PathNode *down;
@@ -213,6 +278,8 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
 
     BotDirection tempDir;
 
+    PathNode *tempDirCompetetors[4]; // CHOOSES DIRECTIONS THAT ARE VISITED
+
     do
     {
         // map[(y * map_size->x) + x]
@@ -220,6 +287,13 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         // CHECK UP
         if (map[((currentY - 1) * map_size->x) + currentX] == ' ')
         {
+            if (!pathGrid[((currentY - 1) * map_size->x) + currentX].visited)
+            {
+                pathGrid[((currentY - 1) * map_size->x) + currentX].parentX = currentX;
+                pathGrid[((currentY - 1) * map_size->x) + currentX].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[((currentY - 1) * map_size->x) + currentX].visited = true;
+            }    
+
             pathGrid[((currentY - 1) * map_size->x) + currentX].h = manhattanDistance(player->position[0], currentX, player->position[1], currentY - 1);
             pathGrid[((currentY - 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY - 1, enemy->position[0], enemy->position[1]);
             pathGrid[((currentY - 1) * map_size->x) + currentX].f = (pathGrid[((currentY - 1) * map_size->x) + currentX].g) + (pathGrid[((currentY - 1) * map_size->x) + currentX].h);
@@ -227,6 +301,13 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         // CHECK DOWN
         if (map[((currentY + 1) * map_size->x) + currentX] == ' ')
         {
+            if (!pathGrid[((currentY + 1) * map_size->x) + currentX].visited)
+            {
+                pathGrid[((currentY + 1) * map_size->x) + currentX].parentX = currentX;
+                pathGrid[((currentY + 1) * map_size->x) + currentX].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[((currentY + 1) * map_size->x) + currentX].visited = true;
+            } 
+
             pathGrid[((currentY + 1) * map_size->x) + currentX].h = manhattanDistance(player->position[0], currentX, player->position[1], currentY + 1);
             pathGrid[((currentY + 1) * map_size->x) + currentX].g = backTrack(pathGrid, map_size, currentX, currentY + 1, enemy->position[0], enemy->position[1]);
             pathGrid[((currentY + 1) * map_size->x) + currentX].f = (pathGrid[((currentY + 1) * map_size->x) + currentX].g) + (pathGrid[((currentY + 1) * map_size->x) + currentX].h);
@@ -234,6 +315,13 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         // CHECK LEFT
         if (map[(currentY * map_size->x) + (currentX - 1)] == ' ')
         {
+            if (!pathGrid[(currentY * map_size->x) + (currentX - 1)].visited)
+            {
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].parentX = currentX;
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[(currentY * map_size->x) + (currentX - 1)].visited = true;
+            } 
+
             pathGrid[(currentY * map_size->x) + (currentX - 1)].h = manhattanDistance(player->position[0], currentX - 1, player->position[1], currentY);
             pathGrid[(currentY * map_size->x) + (currentX - 1)].g = backTrack(pathGrid, map_size, currentX - 1, currentY, enemy->position[0], enemy->position[1]);
             pathGrid[(currentY * map_size->x) + (currentX - 1)].f = (pathGrid[(currentY * map_size->x) + (currentX - 1)].g) + (pathGrid[(currentY * map_size->x) + (currentX - 1)].h);
@@ -241,6 +329,13 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         // CHECK RIGHT
         if (map[(currentY * map_size->x) + (currentX + 1)] == ' ')
         {
+            if (!pathGrid[(currentY * map_size->x) + (currentX + 1)].visited)
+            {
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].parentX = currentX;
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].parentY = currentY;  //int goalX, int currentX, int goalY, int currentY
+                pathGrid[(currentY * map_size->x) + (currentX + 1)].visited = true;
+            } 
+
             pathGrid[(currentY * map_size->x) + (currentX + 1)].h = manhattanDistance(player->position[0], currentX + 1, player->position[1], currentY);
             pathGrid[(currentY * map_size->x) + (currentX + 1)].g = backTrack(pathGrid, map_size, currentX + 1, currentY, enemy->position[0], enemy->position[1]);
             pathGrid[(currentY * map_size->x) + (currentX + 1)].f = (pathGrid[(currentY * map_size->x) + (currentX + 1)].g) + (pathGrid[(currentY * map_size->x) + (currentX + 1)].h);
@@ -248,14 +343,58 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         
         // WE CHECK ALL SURROUNDING NODES F AND CHOOSE LOWEST AND THEN CHOOSE UP, DOWN, RIGHT, LEFT
 
-        up = &pathGrid[((currentY - 1) * map_size->x) + currentX];
-        down = &pathGrid[((currentY + 1) * map_size->x) + currentX];
-        left = &pathGrid[(currentY * map_size->x) + (currentX - 1)];
-        right = &pathGrid[(currentY * map_size->x) + (currentX + 1)];
+        up = (pathGrid[((currentY - 1) * map_size->x) + currentX].visited) ? &pathGrid[((currentY - 1) * map_size->x) + currentX] : NULL;
+        down = (pathGrid[((currentY + 1) * map_size->x) + currentX].visited) ? &pathGrid[((currentY + 1) * map_size->x) + currentX] : NULL;
+        left = (pathGrid[(currentY * map_size->x) + (currentX - 1)].visited) ? &pathGrid[(currentY * map_size->x) + (currentX - 1)] : NULL;
+        right = (pathGrid[(currentY * map_size->x) + (currentX + 1)].visited) ? &pathGrid[(currentY * map_size->x) + (currentX + 1)] : NULL;
 
-        tempLowestFVal1 = (up->f < down->f) ? up : down;
-        tempLowestFVal2 = (left->f < right->f) ? left : right;
-        lowestFVal = (tempLowestFVal1->f < tempLowestFVal2->f) ? tempLowestFVal1 : tempLowestFVal2;
+        tempDirCompetetors[0] = NULL;
+        tempDirCompetetors[1] = NULL;
+        tempDirCompetetors[2] = NULL;
+        tempDirCompetetors[3] = NULL;
+
+        lowestFVal = NULL;
+
+        if (up != NULL)
+        {
+            tempDirCompetetors[0] = up;
+            lowestFVal = tempDirCompetetors[0];
+        }
+        if (down != NULL)
+        {
+            tempDirCompetetors[1] = down;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[1];
+            }
+        }
+        if (left != NULL)
+        {
+            tempDirCompetetors[2] = left;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[2];
+            }
+        }
+        if (right != NULL)
+        {
+            tempDirCompetetors[3] = right;
+            if (lowestFVal == NULL)
+            {
+                lowestFVal = tempDirCompetetors[3];
+            }
+        }
+        
+        for (int i = 0; i < 4; i++)
+        {
+            if (tempDirCompetetors[i] != NULL)
+            {
+                if (tempDirCompetetors[i]->f < lowestFVal->f)
+                {
+                    lowestFVal = tempDirCompetetors[i];
+                }
+            }
+        }
 
         if (lowestFVal == up)
         {
@@ -296,11 +435,15 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         {
             if (currentX == player->position[0] && currentY == player->position[1])
             {
+                free(pathGrid);
+                pathGrid = NULL;
                 return true; // path found
             }
         }
         else
         {
+            free(pathGrid);
+            pathGrid = NULL;
             return false; // Checked everywhere possible and could not find a path
         }
 
@@ -431,10 +574,14 @@ void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *en
         printf("\nMemory reallocation Failed.\n");
         free(botDirCache);
         botDirCache = NULL;
+        free(pathGrid);
+        pathGrid = NULL;
         exit(1);
     }
     
     botDirCache = temp;
     temp = NULL;
+    free(pathGrid);
+    pathGrid = NULL;
 
 }
