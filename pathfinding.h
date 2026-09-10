@@ -6,7 +6,7 @@
 
 bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *enemy);// used to check if player can get to exit
 bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity *enemy); // used to check if enemy can get to player
-void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, size_t *botCacheSize); // Used to find path from enemy to player and set bot direction cache to that value
+void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, int *botCacheSize); // Used to find path from enemy to player and set bot direction cache to that value
 
 // Also, only run isPlayerReachable on map generation.
 // Only run findPlayerPath if player moves, else

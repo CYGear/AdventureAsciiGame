@@ -44,7 +44,7 @@ void initializeGame(GameEntity *player, GameEntity *enemy)
     }while(!completed); 
 }
 
-void increaseMapSize(char **map, Map *map_size, BotDirection **botDirCache, size_t *botCacheSize) // I need ** to actually chnage memory address. * in a
+void increaseMapSize(char **map, Map *map_size, BotDirection **botDirCache, int *botCacheSize) // I need ** to actually chnage memory address. * in a
 {                                               // function only copies the memory address it can't actually change it
 
     map_size->x += 2;
@@ -95,7 +95,7 @@ int main()
 
     char *map = malloc(map_size.x * map_size.y * sizeof(char)); // allocates 100 bytes
 
-    size_t botCacheSize = map_size.x * map_size.y; // 100 possible moves for 100 spaces in array
+    int botCacheSize = map_size.x * map_size.y; // 100 possible moves for 100 spaces in array
     BotDirection *botDirCache = malloc(botCacheSize * sizeof(BotDirection));
 
     // Use realloc later on for map size change
@@ -116,7 +116,7 @@ int main()
     // char wall = '#';
 
     initializeGame(&player, &enemy);
-    generateMap(map, &map_size, &player, &enemy, isPlayerReachable, isExitReachable, botDirCache, &botCacheSize); // will be called when exit 
+    generateMap(map, &map_size, &player, &enemy, isPlayerReachable, isExitReachable); // will be called when exit 
     MoveStatus result = VALID;
 
     while (true)
@@ -129,7 +129,7 @@ int main()
                 clearTerminal();
                 printf("\nINCREASING MAP SIZE NOW!");
                 increaseMapSize(&map, &map_size, &botDirCache, &botCacheSize);
-                generateMap(map, &map_size, &player, &enemy, isPlayerReachable, isExitReachable, botDirCache, &botCacheSize);
+                generateMap(map, &map_size, &player, &enemy, isPlayerReachable, isExitReachable);
                 level += 1;
                 break;
 

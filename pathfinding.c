@@ -78,8 +78,6 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
     PathNode *left;
     PathNode *right;
 
-    BotDirection tempDir;
-
     PathNode *tempDirCompetetors[4]; // CHOOSES DIRECTIONS THAT ARE VISITED
 
     do
@@ -203,7 +201,6 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         {
             if (checkMove(map, map_size, player, enemy, 'W', 'P'))
             {
-                tempDir = UP;
                 currentY -= 1;
             }
         }
@@ -211,7 +208,6 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         {
             if (checkMove(map, map_size, player, enemy, 'S', 'P'))
             {
-                tempDir = DOWN;
                 currentY += 1;
             }
         }
@@ -219,7 +215,6 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         {
             if (checkMove(map, map_size, player, enemy, 'A', 'P'))
             {
-                tempDir = LEFT;
                 currentX -= 1;
             }
         }
@@ -227,7 +222,6 @@ bool isExitReachable(char *map, Map *map_size, GameEntity *player, GameEntity *e
         {
             if (checkMove(map, map_size, player, enemy, 'D', 'P'))
             {
-                tempDir = RIGHT;
                 currentX += 1;
             }
         }
@@ -275,8 +269,6 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
     PathNode *down;
     PathNode *left;
     PathNode *right;
-
-    BotDirection tempDir;
 
     PathNode *tempDirCompetetors[4]; // CHOOSES DIRECTIONS THAT ARE VISITED
 
@@ -400,7 +392,6 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         {
             if (checkMove(map, map_size, player, enemy, 'W', 'E'))
             {
-                tempDir = UP;
                 currentY -= 1;
             }
         }
@@ -408,7 +399,6 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         {
             if (checkMove(map, map_size, player, enemy, 'S', 'E'))
             {
-                tempDir = DOWN;
                 currentY += 1;
             }
         }
@@ -416,7 +406,6 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         {
             if (checkMove(map, map_size, player, enemy, 'A', 'E'))
             {
-                tempDir = LEFT;
                 currentX -= 1;
             }
         }
@@ -424,7 +413,6 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
         {
             if (checkMove(map, map_size, player, enemy, 'D', 'E'))
             {
-                tempDir = RIGHT;
                 currentX += 1;
             }
         }
@@ -450,7 +438,7 @@ bool isPlayerReachable(char *map, Map *map_size, GameEntity *player, GameEntity 
     } while (true); 
 }
 
-void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, size_t *botCacheSize) // find path from enemy to player, and set the botDirCache. This will run each time player MOVES, not if BLOCKED, and each time map is generated
+void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, int *botCacheSize) // find path from enemy to player, and set the botDirCache. This will run each time player MOVES, not if BLOCKED, and each time map is generated
 {
     int counter = 0;
 
@@ -563,10 +551,10 @@ void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *en
 
     // REALLOCATE BOTDIRCACHE only as big as the amount of directions we have inside
 
-    //size_t botCacheSize = map_size.x * map_size.y; // 100 possible moves for 100 spaces in array
+    //int botCacheSize = map_size.x * map_size.y; // 100 possible moves for 100 spaces in array
     //BotDirection *botDirCache = malloc(botCacheSize * sizeof(BotDirection));
 
-    *botCacheSize = (size_t)counter; // Items in bot cache, cast int to size_t
+    *botCacheSize = counter; // Items in bot cache
     BotDirection *temp = realloc(botDirCache, (*botCacheSize * sizeof(BotDirection)));
 
     if (temp == NULL)

@@ -13,7 +13,7 @@
 
 MoveStatus checkMove(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, char direction, char who);
 
-MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, void (*updateMap)(char*, Map*, GameEntity*, GameEntity*), void (*drawMap)(char*, Map*, GameEntity*, GameEntity*), void (*findPlayerPath)(char*, Map*, GameEntity*, GameEntity*, BotDirection*, size_t*));
-                                                                                                                                                                                            //void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, size_t *botCacheSize);
+MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, void (*updateMap)(char*, Map*, GameEntity*, GameEntity*), void (*drawMap)(char*, Map*, GameEntity*, GameEntity*), void (*findPlayerPath)(char*, Map*, GameEntity*, GameEntity*, BotDirection*, int*));
+                                                                                                                                                                                            //void findPlayerPath(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, BotDirection *botDirCache, int *botCacheSize);
 
 #endif

@@ -59,6 +59,7 @@ MoveStatus checkMove(char *map, Map *map_size, GameEntity *player, GameEntity *e
             {
                 return BLOCKED;
             }
+            break;
         case 'S': 
             if ((pos_y + 1) < map_size->y)
             {
@@ -83,6 +84,7 @@ MoveStatus checkMove(char *map, Map *map_size, GameEntity *player, GameEntity *e
             {
                 return BLOCKED;
             }
+            break;
         case 'A':
             if ((pos_x - 1) >= 0)
             {
@@ -107,6 +109,7 @@ MoveStatus checkMove(char *map, Map *map_size, GameEntity *player, GameEntity *e
             {
                 return BLOCKED;
             }
+            break;
         case 'D':
             if ((pos_x + 1) < map_size->x)
             {
@@ -131,12 +134,14 @@ MoveStatus checkMove(char *map, Map *map_size, GameEntity *player, GameEntity *e
             {
                 return BLOCKED;
             }
+            break;
 
-        default: return INVALID_INPUT;
+        default: return INVALID_INPUT; break;
     }
+    return INVALID_INPUT;
 }
 
-MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, void (*updateMap)(char*, Map*, GameEntity*, GameEntity*), void (*drawMap)(char*, Map*, GameEntity*, GameEntity*), void (*findPlayerPath)(char*, Map*, GameEntity*, GameEntity*, BotDirection*, size_t*), BotDirection *botDirCache, size_t *botCacheSize)
+MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, void (*updateMap)(char*, Map*, GameEntity*, GameEntity*), void (*drawMap)(char*, Map*, GameEntity*, GameEntity*), void (*findPlayerPath)(char*, Map*, GameEntity*, GameEntity*, BotDirection*, int*), BotDirection *botDirCache, int *botCacheSize)
 {
     bool isRunning = true;
 
@@ -222,15 +227,7 @@ MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *e
                 {
                     return DEAD;
                 }
-                /*
-                else if (move_status == BLOCKED)
-                {
-                    // Move enemy with already set botDirCache
-                    
-                }
                 break;
-                */
-
             case 'S':
                 move_status = checkMove(map, map_size, player, enemy, 'S', 'P'); 
         
@@ -298,7 +295,6 @@ MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *e
                     return DEAD;
                 }
                 break;
-
             case 'A':
                 move_status = checkMove(map, map_size, player, enemy, 'A', 'P'); 
         
@@ -366,7 +362,6 @@ MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *e
                     return DEAD;
                 }
                 break;
-
             case 'D':
                 move_status = checkMove(map, map_size, player, enemy, 'D', 'P'); 
         
@@ -439,4 +434,6 @@ MoveStatus inputLoop(char *map, Map *map_size, GameEntity *player, GameEntity *e
     }while (isRunning);
 
     disable_raw_mode(&orig_settings);
+
+    return DEAD;
 }

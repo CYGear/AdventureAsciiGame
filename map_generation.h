@@ -4,6 +4,6 @@
 
 #include "game_structures.h" // Gives access to Map and GameEntity
 
-void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool (*isPlayerReachable)(char*, Map*, GameEntity*, GameEntity*), bool (*isExitReachable)(char*, Map*, GameEntity*, GameEntity*), BotDirection *botDirCache, size_t *botCacheSize);                                                
+void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool (*isPlayerReachable)(char*, Map*, GameEntity*, GameEntity*), bool (*isExitReachable)(char*, Map*, GameEntity*, GameEntity*));                                     
 
 #endif

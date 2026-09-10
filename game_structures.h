@@ -45,7 +45,7 @@ typedef struct
 
 typedef struct 
 {
-    size_t x, y;
+    int x, y;
     
 } Map;
 

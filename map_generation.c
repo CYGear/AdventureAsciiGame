@@ -15,7 +15,7 @@ typedef struct
 
 } Wall;
 
-void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool (*isPlayerReachable)(char*, Map*, GameEntity*, GameEntity*), bool (*isExitReachable)(char*, Map*, GameEntity*, GameEntity*), BotDirection *botDirCache, size_t *botCacheSize)
+void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool (*isPlayerReachable)(char*, Map*, GameEntity*, GameEntity*), bool (*isExitReachable)(char*, Map*, GameEntity*, GameEntity*))
 {
     player->position[0] = 0;
     player->position[1] = 0;
@@ -102,7 +102,7 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
     {
         do
         {
-            printf("\n%d", wallsGenerated);
+            printf("\nWalls generated: %d out of %d", wallsGenerated, wallsToGenerate);
 
             tempX = rand() % map_size->x;
             tempY = rand() % map_size->y;
