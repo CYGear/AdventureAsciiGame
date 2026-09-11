@@ -15,6 +15,43 @@ typedef struct
 
 } Wall;
 
+void placeGameObjects(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool isPlayerPos, bool isEnemyPos, bool isExitPos)
+{
+    printf("\nSTARTED  PLACING ENEMY, PLAYER, AND EXIT!");
+    for (int y = 0; y < map_size->y; y++) // y
+    {
+        for (int x = 0; x < map_size->x; x++) // x
+        {
+            isPlayerPos = (x == player->position[0] && y == player->position[1]);
+            isEnemyPos = (x == enemy->position[0] && y == enemy->position[1]);
+            isExitPos = (x == exit_x && y == exit_y);
+
+            map[((player->position[1] * map_size->x) + player->position[0])] = player->icon;
+            map[((enemy->position[1] * map_size->x) + enemy->position[0])] = enemy->icon;
+            map[((exit_y * map_size->x) + exit_x)] = '$';
+
+            if (!isExitPos && !isPlayerPos && !isEnemyPos)
+            {
+                map[((y * map_size->x) + x)] = ' '; // temporary for testing draw method
+            }
+        }
+    }
+    printf("\nFINNISHED PLACING ENEMY, PLAYER, AND EXIT!");
+}
+
+void clearMap(char *map, Map *map_size)
+{
+    printf("\nSTARTED CLEARING");
+    for (int y = 0; y < map_size->y; y++) // y
+    {
+        for (int x = 0; x < map_size->x; x++) // x
+        {
+            map[((y * map_size->x) + x)] = ' '; // reset to blank
+        }
+    }
+    printf("\nFINNISHED CLEARING MAP!");
+}
+
 void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy, bool (*isPlayerReachable)(char*, Map*, GameEntity*, GameEntity*), bool (*isExitReachable)(char*, Map*, GameEntity*, GameEntity*))
 {
     player->position[0] = 0;
@@ -45,46 +82,10 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
     //        We need to have some sort of pathfinding for enemy and resuse it for wall generation.
     //        CANNOT BE IN THE SAME PLACE AS PLAYER, ENEMY, OR EXIT.
 
-    bool isPlayerPos = false;
-    bool isEnemyPos = false;
-    bool isExitPos = false;
-
-    printf("\nSTARTED  PLACING ENEMY, PLAYER, AND EXIT!");
-    for (int y = 0; y < map_size->y; y++) // y
-    {
-        for (int x = 0; x < map_size->x; x++) // x
-        {
-            isPlayerPos = (x == player->position[0] && y == player->position[1]);
-            isEnemyPos = (x == enemy->position[0] && y == enemy->position[1]);
-            isExitPos = (x == exit_x && y == exit_y);
-
-            map[((player->position[1] * map_size->x) + player->position[0])] = player->icon;
-            map[((enemy->position[1] * map_size->x) + enemy->position[0])] = enemy->icon;
-            map[((exit_y * map_size->x) + exit_x)] = '$';
-
-            if (!isExitPos && !isPlayerPos && !isEnemyPos)
-            {
-                map[((y * map_size->x) + x)] = ' '; // temporary for testing draw method
-            }
-        }
-    }
-    printf("\nFINNISHED PLACING ENEMY, PLAYER, AND EXIT!");
-
     // WALLS:
     
-    int wallsToGenerate = (int)(map_size->x); // is 10 * 10 then generate 10 wall coords in entire array
+    int wallsToGenerate = map_size->x; // is 10 * 10 then generate 10 wall coords in entire array
     int wallsGenerated = 0;
-
-    Wall wall_list[wallsToGenerate];
-
-    printf("\nSTARTED GENERATING WALL DIRECTIONS");
-    for (int i = 0; i < wallsToGenerate; i++)
-    {
-        WallDirection tempDirection = rand() % 2; // either VERTICAL or HORIZONTAL
-
-        wall_list[i].wallDir = tempDirection;
-    }
-    printf("\nFINNISHED GENERATING WALL DIRECTIONS");
 
     int tempX = 0;
     int tempY = 0;
@@ -97,9 +98,21 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
     bool conditionHori2 = false;
     bool conditionHori3 = false;
 
+    bool isPlayerPos = false;
+    bool isEnemyPos = false;
+    bool isExitPos = false;
+
     printf("\nSTARTED WALL GENERATION!");
     do
     {
+        if (!isPlayerReachable(map, map_size, player, enemy) || !isExitReachable(map, map_size, player, enemy))
+        {
+            clearMap(map, map_size);
+            placeGameObjects(map, map_size, player, enemy, isPlayerPos, isEnemyPos, isExitPos);
+
+            wallsGenerated = 0;
+        }
+
         do
         {
             printf("\nWalls generated: %d out of %d", wallsGenerated, wallsToGenerate);
@@ -119,7 +132,9 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
             conditionHori2 = (map[((tempY * map_size->x) + (tempX + 1))] == ' ');
             conditionHori3 = (map[((tempY * map_size->x) + (tempX + 2))] == ' ');
 
-            if (wall_list[wallsGenerated].wallDir == VERTICAL)
+            WallDirection tempDir = rand() % 2;
+
+            if (tempDir == VERTICAL)
             {
                 if ((conditionVert1 && conditionVert2 && conditionVert3) && !(isPlayerPos && isEnemyPos && isExitPos))
                 {
@@ -142,13 +157,6 @@ void generateMap(char *map, Map *map_size, GameEntity *player, GameEntity *enemy
         } while (wallsGenerated < wallsToGenerate);
     } while(!isPlayerReachable(map, map_size, player, enemy) || !isExitReachable(map, map_size, player, enemy));
     printf("\nCOMPLETED WALL GENERATION!");
-    /*do 
-    {
-        
-    } while (!isPlayerReachable(map, map_size, player, enemy) &&!isExitReachable(map, map_size, player, enemy);*/ // keep running untill both are reachable
-        
-    // keep generating untill both paths exist
-
     // END OF WALLS
 
     // LOG FPRINTF
